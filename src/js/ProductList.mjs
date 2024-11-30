@@ -5,7 +5,7 @@ function productCardTemplate(product) {
       <img src="${product.Image}" alt="Image of ${product.Name}">
       <h3 class="card__brand">${product.NameWithoutBrand}</h3>
       <h2 class="card__name">${product.Name}</h2>
-      <p class="product-card__price">$${price}</p>
+      <p class="product-card__price">$${product.ListPrice}</p>
     </a>
   </li>`;
 }
