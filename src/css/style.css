@@ -122,14 +122,15 @@ button {
 .products {
   padding: 0.5em;
 }
-.product-list {
+#product-list {
   display: flex;
-  flex-flow: row wrap;
+  flex-direction: row;
+  flex-wrap: nowrap;
   justify-content: space-between;
   list-style-type: none;
   padding: 0;
 }
-.product-list a {
+#product-list a {
   text-decoration: none;
   color: var(--dark-grey);
 }
