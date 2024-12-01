@@ -21,3 +21,16 @@ export function setClick(selector, callback) {
   });
   qs(selector).addEventListener("click", callback);
 }
+
+/**
+ * Extracts a query parameter value from the URL.
+ * @param {string} param - The name of the parameter to retrieve.
+ * @returns {string|null} - The parameter value or null if not found.
+ */
+export function getParams(param) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
+}
+
+
+
