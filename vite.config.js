@@ -16,4 +16,11 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    port: parseInt(process.env.PORT || '4173', 10), // Use the Render-provided PORT
+    host: '0.0.0.0', // Ensure the app binds to 0.0.0.0
+  },
 });
+
+
+
