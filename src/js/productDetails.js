@@ -1,66 +1,76 @@
-import ProductData from '../js/ProductData.mjs';
-import { getParams } from '../js/utils.mjs';
+import ProductData from "../js/ProductData.mjs";
+import { getParams } from "../js/utils.mjs";
 
+const productId = getParams("product");
+const productData = new ProductData("tents");
 
+// Fetch cart data from local storage
+function getCartItems() {
+  const cart = localStorage.getItem("cart");
+  return cart ? JSON.parse(cart) : [];
+}
 
-async function loadProductDetails() {
-  const container = document.getElementById('product-details-container');
-  const productId = getParams('product'); // Extract the 'id' query parameter
-  console.log('Product ID:', productId);
+// Save cart data to local storage
+function saveCartItems(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
 
-  if (!productId) {
-    container.innerHTML = '<p>Error: Product not found. Please select a valid product.</p>';
-    return;
+// Add product to the cart
+function addToCart(product) {
+  const cart = getCartItems();
+
+  // Check if the product is already in the cart
+  const existingItem = cart.find((item) => item.id === product.Id);
+  if (existingItem) {
+    existingItem.quantity += 1; // Increment quantity
+  } else {
+    // Add new product to the cart
+    cart.push({
+      id: product.Id,
+      name: product.Name,
+      image: product.image,
+      color: product.color || "Default Color",
+      price: product.FinalPrice,
+      quantity: 1,
+    });
   }
 
+  saveCartItems(cart); // Save updated cart to local storage
+  alert("Product added to cart!");
+}
+
+// Render product details to the page
+async function renderProductDetails() {
   try {
-    const dataSource = new ProductData('tents'); // Specify category
-    const product = await dataSource.findProductById(productId);
+    const product = await productData.findProductById(productId);
 
     if (!product) {
-      container.innerHTML = '<p>Product not found. Please try again.</p>';
+      document.querySelector(".product-details").innerHTML = `
+        <h3>Error: Product not found. Please select a valid product.</h3>
+      `;
       return;
     }
 
     // Render product details
-    container.innerHTML = `
-      <div class="product-details">
-        <img src="${product.Image}" alt="${product.Name}" class="product-image">
-        <h2>${product.Name}</h2>
-        <p>${product.DescriptionHtmlSimple}</p>
-        <p><strong>Price:</strong> $${product.FinalPrice.toFixed(2)}</p>
-        <button id="add-to-cart">Add to Cart</button>
-      </div>
+    document.querySelector(".product-details").innerHTML = `
+      <h1>${product.Name}</h1>
+      <img src="${product.Image}" alt="${product.Name}" />
+      <p>${product.DescriptionHtmlSimple}</p>
+      <p><strong>Price:</strong> $${product.FinalPrice.toFixed(2)}</p>
+      <button id="add-to-cart">Add to Cart</button>
     `;
 
-    // Add to cart functionality
-    document.getElementById('add-to-cart').addEventListener('click', () => {
-      addToCart(product);
-    });
+    // Attach the Add to Cart event
+    document
+      .getElementById("add-to-cart")
+      .addEventListener("click", () => addToCart(product));
   } catch (error) {
-    console.error('Error loading product details:', error);
-    container.innerHTML = '<p>There was an error loading the product details. Please try again later.</p>';
+    console.error("Error rendering product details:", error);
+    document.querySelector(".product-details").innerHTML = `
+      <h3>Error loading product details. Please try again later.</h3>
+    `;
   }
 }
 
-function addToCart(product) {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  const existingProduct = cart.find((item) => item.id === product.id);
-
-  if (existingProduct) {
-    existingProduct.quantity += 1;
-  } else {
-    cart.push({ ...product, quantity: 1 });
-  }
-
-  localStorage.setItem('cart', JSON.stringify(cart));
-  alert(`${product.Name} has been added to your cart.`);
-}
-
-// Load product details on page load
-document.addEventListener('DOMContentLoaded', loadProductDetails);
-
-
-
-
-
+// Initialize the product details page
+document.addEventListener("DOMContentLoaded", renderProductDetails);
