@@ -1,3 +1,4 @@
+const baseURL = import.meta.env.VITE_SERVER_URL;
 function convertToJson(res) {
   if (res.ok) {
     return res.json();
@@ -7,30 +8,18 @@ function convertToJson(res) {
 }
 
 export default class ProductData {
-  constructor(categoryOrPath) {
-    if (categoryOrPath.includes(".json")) {
-      // Use the full path directly if a file path is provided
-      this.path = categoryOrPath;
-    } else {
-      // Construct the path based on the category
-      this.path = `/json/${categoryOrPath}.json`;
-    }
-    console.log(`Fetching data from: ${this.path}`);
+  constructor(category) {
+    // this.category = category;
+    // this.path = `../json/${this.category}.json`;
   }
-
-  getData() {
-    return fetch(this.path)
-      .then(convertToJson)
-      .then((data) => data)
-      .catch((error) => {
-        console.error(`Error fetching data from path: ${this.path}`, error);
-        throw error;
-      });
+  async getData(category) {
+    const response = await fetch(baseURL + `products/search/${category}`);
+    const data = await convertToJson(response);
+    return data.Result;
   }
-
   async findProductById(id) {
-    const products = await this.getData();
-    return products.find((item) => item.Id === id);
+    const response = await fetch(baseURL + `product/${id}`);
+    const data = await convertToJson(response);
+    return data.Result;
   }
 }
-
